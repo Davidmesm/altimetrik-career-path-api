@@ -37,7 +37,7 @@ jobs:
             rm -rf /var/www/career-path-api/*
   
             # Transfer published files
-            scp -r /home/runner/work/altimetrik-career-path-api/altimetrik-career-path-api/out/* root@24.199.121.110:/var/www/career-path-api/
+            scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
   
             # Kill any running instance of the API
             pkill -f "dotnet CareerPathCore.API.dll" || true
