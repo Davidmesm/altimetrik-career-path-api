@@ -1,4 +1,4 @@
-name: Deploy CareerPath API
+name: Deploy API to DigitalOcean
 
 on:
   push:
@@ -10,37 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0
 
-    - name: Publish .NET Application
-      run: |
-        dotnet publish CareerPathCore.sln -c Release -o out
-
-    - name: Deploy to DigitalOcean
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: 24.199.121.110
-        username: root
-        key: ${{ secrets.DEPLOY_SSH_KEY }}
-        port: 22
-        script: |
-          # Ensure deployment directory exists and is clean
-          mkdir -p /var/www/career-path-api
-          rm -rf /var/www/career-path-api/*
-
-          # Transfer published files
-          tar -xf /dev/stdin -C /var/www/career-path-api <<EOF
-          $(tar -czf - -C ./out .)
-          EOF
-
-          # Kill any running instance of the API
-          pkill -f "dotnet CareerPathCore.API.dll" || true
-
-          # Start the new API instance
-          nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 &
+      - name: Publish .NET Project
+        run: |
+          dotnet publish CareerPathCore.sln --configuration Release --output ./out
+      - name: Check Output Directory
+        run: ls -la ./out
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 24.199.121.110
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Ensure deployment directory exists
+            mkdir -p /var/www/career-path-api
+            rm -rf /var/www/career-path-api/*
+            # Transfer published files
+            tar -czf - -C ./out . | ssh root@24.199.121.110 "tar -xzf - -C /var/www/career-path-api"
+            # Kill any running instance of the API
+            pkill -f "dotnet CareerPathCore.API.dll" || true
+            # Start the new API instance
+            nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 &
