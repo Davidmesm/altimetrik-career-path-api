@@ -22,7 +22,7 @@ jobs:
         run: |
           dotnet publish CareerPathCore.sln --configuration Release --output ./out
       - name: Check Output Directory
-        run: ls -la ./out
+        run: pwd ls -la ./out
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v0.1.10
         with:
