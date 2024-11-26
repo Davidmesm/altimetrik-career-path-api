@@ -32,12 +32,16 @@ jobs:
           port: 22
           debug: true
           script: |
-            # Ensure deployment directory exists
+            # Ensure deployment directory exists and is clean
             mkdir -p /var/www/career-path-api
             rm -rf /var/www/career-path-api/*
+  
             # Transfer published files
-            tar -czf - -C ./out . | ssh root@24.199.121.110 "tar -xzf - -C /var/www/career-path-api"
+            tar -czf - -C ./out . | tar -xzf - -C /var/www/career-path-api
+  
             # Kill any running instance of the API
             pkill -f "dotnet CareerPathCore.API.dll" || true
+  
             # Start the new API instance
             nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 &
+
