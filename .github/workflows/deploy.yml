@@ -23,7 +23,8 @@ jobs:
           dotnet publish CareerPathCore.sln --configuration Release --output ./out
       - name: Check Output Directory
         run: ls -la ./out
-      - name: Deploy to DigitalOcean
+
+      - name: Prepare DigitalOcean for Transfer
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: 24.199.121.110
@@ -36,9 +37,19 @@ jobs:
             mkdir -p /var/www/career-path-api
             rm -rf /var/www/career-path-api/*
   
-            # Transfer published files
+      - name: Transfer Output Directory To DigitalOcean
+        run: | 
             scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
   
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 24.199.121.110
+          username: root
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          port: 22
+          debug: true
+          script: |
             # Kill any running instance of the API
             pkill -f "dotnet CareerPathCore.API.dll" || true
   
