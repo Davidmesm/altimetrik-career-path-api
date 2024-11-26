@@ -30,6 +30,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
+          debug: true
           script: |
             # Ensure deployment directory exists
             mkdir -p /var/www/career-path-api
