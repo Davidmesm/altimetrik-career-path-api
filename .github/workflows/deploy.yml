@@ -28,7 +28,7 @@ jobs:
         with:
           host: 24.199.121.110
           username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           port: 22
           debug: true
           script: |
