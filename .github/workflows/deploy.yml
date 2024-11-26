@@ -24,21 +24,17 @@ jobs:
       - name: Check Output Directory
         run: ls -la ./out
 
-      - name: Prepare DigitalOcean for Transfer
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: 24.199.121.110
-          username: root
-          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          port: 22
-          debug: true
-          script: |
-            # Ensure deployment directory exists and is clean
-            mkdir -p /var/www/career-path-api
-            rm -rf /var/www/career-path-api/*
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Add DigitalOcean Host to Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 24.199.121.110 >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Transfer Output Directory To DigitalOcean
-        run: | 
+        run: |
           sshpass -p "${{ secrets.DEPLOY_SSH_PASSWORD }}" scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
   
       - name: Deploy
@@ -55,4 +51,3 @@ jobs:
   
             # Start the new API instance
             nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 &
-
