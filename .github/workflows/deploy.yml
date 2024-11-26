@@ -22,7 +22,7 @@ jobs:
         run: |
           dotnet publish CareerPathCore.sln --configuration Release --output ./out
       - name: Check Output Directory
-        run: pwd ls -la ./out
+        run: ls -la ./out
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -37,8 +37,7 @@ jobs:
             rm -rf /var/www/career-path-api/*
   
             # Transfer published files
-            pwd
-            tar -czf - -C ./out . | tar -xzf - -C /var/www/career-path-api
+             tar -czf - -C /home/runner/work/altimetrik-career-path-api/altimetrik-career-path-api/out . | tar -xzf - -C /var/www/career-path-api
   
             # Kill any running instance of the API
             pkill -f "dotnet CareerPathCore.API.dll" || true
