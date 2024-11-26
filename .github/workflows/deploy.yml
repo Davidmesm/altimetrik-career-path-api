@@ -36,15 +36,10 @@ jobs:
             # Ensure deployment directory exists and is clean
             mkdir -p /var/www/career-path-api
             rm -rf /var/www/career-path-api/*
-  
-      - name: Add Remote Host to Known Hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H 24.199.121.110 >> ~/.ssh/known_hosts
 
       - name: Transfer Output Directory To DigitalOcean
         run: | 
-          scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
+          sshpass -p "${{ secrets.DEPLOY_SSH_PASSWORD }}" scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
   
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.10
