@@ -37,7 +37,7 @@ jobs:
         run: |
           sshpass -p "${{ secrets.DEPLOY_SSH_PASSWORD }}" scp -r ./out/* root@24.199.121.110:/var/www/career-path-api/
   
-      - name: Deploy
+      - name: Deploy API
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: 24.199.121.110
@@ -48,6 +48,17 @@ jobs:
           script: |
             # Kill any running instance of the API
             pkill -f "dotnet CareerPathCore.API.dll" || true
-  
-            # Start the new API instance
-            nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 < /dev/null &
+        
+            # Start the new API instance with full detachment
+            setsid nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 < /dev/null &
+        
+            # Wait a moment to ensure the process starts
+            sleep 5
+        
+            # Check if the API process is running
+            pgrep -f "dotnet CareerPathCore.API.dll" > /dev/null && echo "API is running" || (echo "API failed to start" && exit 1)
+        
+            # Check if the application is listening on the correct port (e.g., 5000)
+            netstat -tuln | grep 5000 || (echo "API is not listening on port 5000" && exit 1)
+        
+        
