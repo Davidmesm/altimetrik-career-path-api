@@ -50,4 +50,4 @@ jobs:
             pkill -f "dotnet CareerPathCore.API.dll" || true
   
             # Start the new API instance
-            nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 &
+            nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 < /dev/null &
