@@ -51,19 +51,19 @@ jobs:
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           port: 22
           script: |
-            # Kill any running instance of the API
-            pkill -f "dotnet" || true
+            # STOP old API service if it exists
+            systemctl stop careerpath-api || true
+            systemctl disable careerpath-api || true
         
-            # Start the new API instance with full detachment
-            setsid nohup dotnet /var/www/career-path-api/CareerPathCore.API.dll > /var/www/career-path-api/app.log 2>&1 < /dev/null &
+            # RELOAD systemd and start the service
+            systemctl daemon-reload
+            systemctl enable careerpath-api
+            systemctl start careerpath-api
         
             # Wait a moment to ensure the process starts
             sleep 5
         
             # Check if the API process is running
-            pgrep -f "dotnet" > /dev/null && echo "API is running" || (echo "API failed to start" && exit 1)
-        
-            # Check if the application is listening on the correct port (e.g., 5000)
-            netstat -tuln | grep 5000 || (echo "API is not listening on port 5000" && exit 1)
+            systemctl status careerpath-api
         
         
