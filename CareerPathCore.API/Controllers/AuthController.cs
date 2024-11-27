@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CareerPathCore.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
