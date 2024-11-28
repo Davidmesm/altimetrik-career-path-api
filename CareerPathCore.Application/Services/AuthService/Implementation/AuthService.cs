@@ -56,8 +56,7 @@ namespace CareerPathCore.Application.Services.AuthService.Implementation
             {
                 Id = Guid.NewGuid(),
                 PasswordHash = HashPassword(password),
-                Email = email,
-                IsNewUser = true
+                Email = email
             });
         }
 
@@ -69,7 +68,7 @@ namespace CareerPathCore.Application.Services.AuthService.Implementation
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Email, user.Email)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

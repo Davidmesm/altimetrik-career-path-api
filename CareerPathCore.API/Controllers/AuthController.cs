@@ -1,7 +1,9 @@
 ﻿using CareerPathCore.API.DTOs.Auth;
 using CareerPathCore.Application.Services.AuthService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace CareerPathCore.API.Controllers
 {
@@ -65,5 +67,16 @@ namespace CareerPathCore.API.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet()]
+        public IActionResult Index()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (email == null)
+                return Unauthorized(new { error = "Invalid token or no user info found" });
+
+            return Ok( new { email });
+        }
     }
 }
