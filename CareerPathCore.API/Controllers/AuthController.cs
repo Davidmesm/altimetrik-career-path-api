@@ -21,11 +21,24 @@ namespace CareerPathCore.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var token = await _authService.Login(request.Email, request.Password);
-            if (token == null)
-                return Unauthorized();
+            try
+            {
+                var token = await _authService.Login(request.Email, request.Password);
 
-            return Ok(new { token });
+                if (token == null)
+                    return Unauthorized(new { error = "Invalid credentials" });
+
+                return Ok(new { token });
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred during registration");
+                return StatusCode(500, new { error = "An unexpected error occurred. Please try again later." });
+            }
         }
 
         [HttpPost("register")]

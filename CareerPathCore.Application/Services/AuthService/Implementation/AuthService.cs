@@ -24,7 +24,7 @@ namespace CareerPathCore.Application.Services.AuthService.Implementation
         {
             var user = await _userRepository.GetUserByEmail(email);
             if (user == null || user.PasswordHash != HashPassword(password))
-                return string.Empty;
+                throw new ValidationException("Invalid email or password. Please try again.");
 
             return GenerateJwt(user);
         }
