@@ -23,7 +23,7 @@ namespace CareerPathCore.API.Controllers
         }
 
         [Authorize]
-        [HttpGet()]
+        [HttpGet("educationLevels")]
         public async Task<IEnumerable<EducationLevel>> GetEducationLevelList()
         {
             return await _catalogService.GetEducationLevels();
