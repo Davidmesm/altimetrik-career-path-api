@@ -33,7 +33,7 @@ namespace CareerPathCore.API.Controllers
         {
             try
             {
-                await _authService.Register(request.Email, request.Password, request.PasswordConfirmation);
+                await _authService.Register(request.Email, request.Password, request.ConfirmPassword);
                 var token = await _authService.Login(request.Email, request.Password);
 
                 if (token == null)
