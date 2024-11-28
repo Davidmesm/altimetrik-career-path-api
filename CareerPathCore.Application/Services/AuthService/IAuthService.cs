@@ -9,5 +9,6 @@ namespace CareerPathCore.Application.Services.AuthService
     public interface IAuthService
     {
         Task<string> Login(string? email, string? password);
+        Task Register(string? email, string? password, string? passwordConfirmation);
     }
 }

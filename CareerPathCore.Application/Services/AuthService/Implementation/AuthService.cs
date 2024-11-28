@@ -28,6 +28,22 @@ namespace CareerPathCore.Application.Services.AuthService.Implementation
             return GenerateJwt(user);
         }
 
+        public async Task Register(string? email, string? password, string? passwordConfirmation)
+        {
+            if(email == null || password == null || passwordConfirmation == null)
+            {
+                throw new Exception("Invalid Data");
+            }
+            
+            await _userRepository.AddUser(new User()
+            {
+                Id = Guid.NewGuid(),
+                PasswordHash = HashPassword(password),
+                Email = email,
+                IsNewUser = true
+            });
+        }
+
         private string GenerateJwt(User user)
         {
             var key = Encoding.ASCII.GetBytes(_jwtSecret);

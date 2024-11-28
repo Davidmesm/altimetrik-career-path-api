@@ -26,5 +26,16 @@ namespace CareerPathCore.API.Controllers
 
             return Ok(new { token });
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            await _authService.Register(request.Email, request.Password, request.PasswordConfirmation);
+            var token = await _authService.Login(request.Email, request.Password);
+            if (token == null)
+                return Unauthorized();
+                
+            return Ok(new { token });
+        }
     }
 }
