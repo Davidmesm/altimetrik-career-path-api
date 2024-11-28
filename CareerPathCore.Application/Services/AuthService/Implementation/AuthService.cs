@@ -2,6 +2,7 @@
 using CareerPathCore.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -30,11 +31,27 @@ namespace CareerPathCore.Application.Services.AuthService.Implementation
 
         public async Task Register(string? email, string? password, string? passwordConfirmation)
         {
-            if(email == null || password == null || passwordConfirmation == null)
-            {
-                throw new Exception("Invalid Data");
-            }
-            
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ValidationException("Email is required.");
+            if (!email.Contains("@") || !email.Contains("."))
+                throw new ValidationException("Invalid email format.");
+            if (!email.EndsWith("@altimetrik.com"))
+                throw new ValidationException("Email must be from Altimetrik.");
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ValidationException("Password is required.");
+            if (password.Length < 8 || password.Length > 20)
+                throw new ValidationException("Password must be between 8 and 20 characters.");
+            if (!password.Any(char.IsLower))
+                throw new ValidationException("Password must include a lowercase letter.");
+            if (!password.Any(char.IsUpper))
+                throw new ValidationException("Password must include an uppercase letter.");
+            if (!password.Any(char.IsDigit))
+                throw new ValidationException("Password must include a number.");
+            if (passwordConfirmation == null)
+                throw new ValidationException("Confirm Password is required.");
+            if (password != passwordConfirmation)
+                throw new ValidationException("Confirm Password doesn't match Password.");
+
             await _userRepository.AddUser(new User()
             {
                 Id = Guid.NewGuid(),
